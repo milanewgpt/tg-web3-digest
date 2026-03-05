@@ -27,6 +27,13 @@ NOISE_PATTERNS = [
 ]
 
 
+def open_db():
+    con = sqlite3.connect(DB_PATH, timeout=30)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("PRAGMA busy_timeout=30000")
+    return con
+
+
 def init_state(con):
     cur = con.cursor()
     cur.execute(
@@ -187,7 +194,7 @@ async def resolve_target_by_name(client, target_name):
 
 
 async def run():
-    con = sqlite3.connect(DB_PATH)
+    con = open_db()
     init_state(con)
 
     end = now_utc()

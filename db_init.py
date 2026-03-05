@@ -4,8 +4,15 @@ import sqlite3
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")
 
 
+def open_db():
+    con = sqlite3.connect(DB_PATH, timeout=30)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("PRAGMA busy_timeout=30000")
+    return con
+
+
 def main():
-    con = sqlite3.connect(DB_PATH)
+    con = open_db()
     cur = con.cursor()
 
     cur.execute(

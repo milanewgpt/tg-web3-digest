@@ -16,8 +16,15 @@ POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "900"))  # 15 minutes default 
 ALL_CHANNELS_MODE = len(CHANNELS) == 1 and CHANNELS[0].lower() in {"all", "*"}
 
 
+def open_db():
+    con = sqlite3.connect(DB_PATH, timeout=30)
+    con.execute("PRAGMA journal_mode=WAL")
+    con.execute("PRAGMA busy_timeout=30000")
+    return con
+
+
 def init_db():
-    con = sqlite3.connect(DB_PATH)
+    con = open_db()
     cur = con.cursor()
     cur.execute(
         """
@@ -81,7 +88,7 @@ async def run():
 
     while True:
         try:
-            con = sqlite3.connect(DB_PATH)
+            con = open_db()
             sources = []
             if ALL_CHANNELS_MODE:
                 # Read from all broadcast channels visible to Reader account.
