@@ -13,6 +13,7 @@ SESSION = os.environ.get("TG_SESSION", "reader_session")
 CHANNELS = [c.strip() for c in os.environ["TG_CHANNELS"].split(",") if c.strip()]
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")
 POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "900"))  # 15 minutes default (quiet)
+ALL_CHANNELS_MODE = len(CHANNELS) == 1 and CHANNELS[0].lower() in {"all", "*"}
 
 
 def init_db():
@@ -81,9 +82,26 @@ async def run():
     while True:
         try:
             con = sqlite3.connect(DB_PATH)
-            for ch in CHANNELS:
-                last_id = get_last_id(con, ch)
-                entity = await client.get_entity(ch)
+            sources = []
+            if ALL_CHANNELS_MODE:
+                # Read from all broadcast channels visible to Reader account.
+                async for dialog in client.iter_dialogs():
+                    if not dialog.is_channel:
+                        continue
+                    if not getattr(dialog.entity, "broadcast", False):
+                        continue
+                    label = dialog.entity.username or dialog.name or str(dialog.id)
+                    key = str(dialog.id)
+                    sources.append((key, label, dialog.entity))
+            else:
+                for ch in CHANNELS:
+                    entity = await client.get_entity(ch)
+                    label = getattr(entity, "username", None) or ch
+                    key = ch
+                    sources.append((key, label, entity))
+
+            for channel_key, channel_label, entity in sources:
+                last_id = get_last_id(con, channel_key)
 
                 new_last = last_id
                 # reverse=True yields ascending order; min_id ensures only new messages
@@ -93,12 +111,12 @@ async def run():
                     text = msg.message.strip()
                     if not text:
                         continue
-                    save_message(con, ch, msg.id, utc_iso(msg.date), text)
+                    save_message(con, channel_label, msg.id, utc_iso(msg.date), text)
                     if msg.id > new_last:
                         new_last = msg.id
 
                 if new_last != last_id:
-                    set_last_id(con, ch, new_last)
+                    set_last_id(con, channel_key, new_last)
 
             con.commit()
             con.close()

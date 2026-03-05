@@ -13,6 +13,8 @@
    - db_init.py
    - requirements.txt
    - .env (copy from .env.example and fill values)
+   - If you want all Reader-subscribed public channels, set:
+     TG_CHANNELS=ALL
 
 3) Initialize DB
    source .venv/bin/activate
