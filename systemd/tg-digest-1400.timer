@@ -3,6 +3,7 @@ Description=Schedule Web3 Digest at 14:00
 
 [Timer]
 OnCalendar=*-*-* 14:00:00
+Timezone=Asia/Jerusalem
 Persistent=true
 
 [Install]

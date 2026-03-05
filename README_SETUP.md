@@ -39,7 +39,10 @@
      python3 tg_digest_sender.py
    Confirm digest appears in your private group.
 
-6) Set server timezone
+6) Optional: Set server timezone
+   If you keep server timezone as UTC, digest timers still use Asia/Jerusalem
+   because each timer unit sets Timezone=Asia/Jerusalem.
+   If you prefer global server timezone change anyway:
    sudo timedatectl set-timezone Asia/Jerusalem
 
 7) Install systemd services
