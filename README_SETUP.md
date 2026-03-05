@@ -41,7 +41,7 @@
 
 6) Optional: Set server timezone
    If you keep server timezone as UTC, digest timers still use Asia/Jerusalem
-   because each timer unit sets Timezone=Asia/Jerusalem.
+   because each timer unit sets OnCalendar with explicit Asia/Jerusalem.
    If you prefer global server timezone change anyway:
    sudo timedatectl set-timezone Asia/Jerusalem
 
