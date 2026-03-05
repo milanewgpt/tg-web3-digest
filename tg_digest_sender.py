@@ -7,7 +7,7 @@ from telethon import TelegramClient
 
 API_ID = int(os.environ["TG_API_ID"])
 API_HASH = os.environ["TG_API_HASH"]
-SESSION = os.environ.get("TG_SESSION", "reader_session")
+SESSION = os.environ.get("TG_SESSION_SENDER", os.environ.get("TG_SESSION", "reader_session"))
 
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")
 TG_TARGET = os.environ["TG_TARGET"]

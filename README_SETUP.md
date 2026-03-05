@@ -15,6 +15,9 @@
    - .env (copy from .env.example and fill values)
    - If you want all Reader-subscribed public channels, set:
      TG_CHANNELS=ALL
+   - Recommended: use separate sessions in .env to avoid lock contention:
+     TG_SESSION_COLLECTOR=reader_collector
+     TG_SESSION_SENDER=reader_sender
 
 3) Initialize DB
    source .venv/bin/activate
