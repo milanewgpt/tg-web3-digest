@@ -7,4 +7,4 @@ Wants=network-online.target
 Type=oneshot
 WorkingDirectory=/opt/tg-web3-digest
 EnvironmentFile=/opt/tg-web3-digest/.env
-ExecStart=/usr/bin/python3 /opt/tg-web3-digest/tg_digest_sender.py
+ExecStart=/opt/tg-web3-digest/.venv/bin/python /opt/tg-web3-digest/tg_digest_sender.py
