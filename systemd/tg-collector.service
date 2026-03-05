@@ -1,0 +1,15 @@
+[Unit]
+Description=Telegram Digest Collector (Reader)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/tg-web3-digest
+EnvironmentFile=/opt/tg-web3-digest/.env
+ExecStart=/usr/bin/python3 /opt/tg-web3-digest/tg_digest_collector.py
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

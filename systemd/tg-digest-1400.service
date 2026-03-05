@@ -1,0 +1,10 @@
+[Unit]
+Description=Send Web3 Digest at 14:00 (Asia/Jerusalem)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/tg-web3-digest
+EnvironmentFile=/opt/tg-web3-digest/.env
+ExecStart=/usr/bin/python3 /opt/tg-web3-digest/tg_digest_sender.py
