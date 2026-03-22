@@ -5,9 +5,9 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/tg-web3-digest
-EnvironmentFile=/opt/tg-web3-digest/.env
-ExecStart=/opt/tg-web3-digest/.venv/bin/python /opt/tg-web3-digest/tg_digest_collector.py
+WorkingDirectory=/home/gpt/tg-web3-digest
+EnvironmentFile=/home/gpt/tg-web3-digest/.env
+ExecStart=/home/gpt/tg-web3-digest/.venv/bin/python /home/gpt/tg-web3-digest/tg_digest_collector.py
 Restart=always
 RestartSec=15
 

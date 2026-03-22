@@ -1,13 +1,13 @@
 1) Create folder and venv
-   sudo mkdir -p /opt/tg-web3-digest
-   sudo chown -R $USER:$USER /opt/tg-web3-digest
-   cd /opt/tg-web3-digest
+   sudo mkdir -p /home/gpt/tg-web3-digest
+   sudo chown -R $USER:$USER /home/gpt/tg-web3-digest
+   cd /home/gpt/tg-web3-digest
 
    python3 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
 
-2) Put files into /opt/tg-web3-digest
+2) Put files into /home/gpt/tg-web3-digest
    - tg_digest_collector.py
    - tg_digest_sender.py
    - db_init.py
@@ -87,7 +87,7 @@ OPTIONAL: Make digest smarter later
 ONE-LINER QUICK START (for Cursor to execute)
 # 0) Ensure you are on the server as a user with sudo.
 # 1) Create folder + venv + install deps:
-sudo mkdir -p /opt/tg-web3-digest && sudo chown -R $USER:$USER /opt/tg-web3-digest && cd /opt/tg-web3-digest && \
+sudo mkdir -p /home/gpt/tg-web3-digest && sudo chown -R $USER:$USER /home/gpt/tg-web3-digest && cd /home/gpt/tg-web3-digest && \
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 
 # 2) Create .env from .env.example, fill values, then:
@@ -107,4 +107,4 @@ IMPORTANT: What you must fill before running
 - TG_API_ID / TG_API_HASH (from https://my.telegram.org)
 - TG_CHANNELS (public channels where Reader is already a member)
 - TG_TARGET (exact private group name, must include Reader + main)
-- Server path in DB_PATH must match /opt/tg-web3-digest/...
+- Server path in DB_PATH must match /home/gpt/tg-web3-digest/...
