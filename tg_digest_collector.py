@@ -12,7 +12,7 @@ SESSION = os.environ.get("TG_SESSION_COLLECTOR", os.environ.get("TG_SESSION", "r
 
 CHANNELS = [c.strip() for c in os.environ["TG_CHANNELS"].split(",") if c.strip()]
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")
-POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "900"))  # 15 minutes default (quiet)
+POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "3600"))  # default 1h (quiet)
 ALL_CHANNELS_MODE = len(CHANNELS) == 1 and CHANNELS[0].lower() in {"all", "*"}
 
 

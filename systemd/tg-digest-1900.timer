@@ -1,8 +1,8 @@
 [Unit]
-Description=Schedule Web3 Digest at 19:00
+Description=Schedule Web3 Digest at 17:00
 
 [Timer]
-OnCalendar=*-*-* 19:00:00 Asia/Jerusalem
+OnCalendar=*-*-* 17:00:00 Asia/Jerusalem
 Persistent=true
 
 [Install]

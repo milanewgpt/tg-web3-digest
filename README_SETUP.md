@@ -77,7 +77,7 @@
    sudo journalctl -u tg-digest-0800.service -n 200 --no-pager
 
 TUNING
-- If Reader is in MANY channels, increase POLL_SECONDS to 900-1200.
+- If Reader is in MANY channels, use POLL_SECONDS=3600 (1h) or higher.
 - If you see FloodWait, do NOT reduce intervals; increase them.
 - Keep TG_CHANNELS limited to channels you truly want.
 

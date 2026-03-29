@@ -1,5 +1,5 @@
 [Unit]
-Description=Send Web3 Digest at 19:00 (Asia/Jerusalem)
+Description=Send Web3 Digest at 17:00 (Asia/Jerusalem)
 After=network-online.target
 Wants=network-online.target
 
