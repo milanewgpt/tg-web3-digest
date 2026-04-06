@@ -52,7 +52,7 @@ async def sender_job():
 async def main():
     scheduler = AsyncIOScheduler(timezone=TZ)
     for hour in SEND_HOURS:
-        scheduler.add_job(sender_job, "cron", hour=hour, minute=0)
+        scheduler.add_job(sender_job, "cron", hour=hour, minute=0, misfire_grace_time=600)
         log.info("Sender scheduled at %02d:00 %s", hour, TZ.zone)
     scheduler.start()
 
