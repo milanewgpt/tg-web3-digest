@@ -5,10 +5,14 @@ from datetime import timezone
 
 from telethon import TelegramClient
 from telethon.errors import FloodWaitError
+from telethon.sessions import StringSession
 
 API_ID = int(os.environ["TG_API_ID"])
 API_HASH = os.environ["TG_API_HASH"]
-SESSION = os.environ.get("TG_SESSION_COLLECTOR", os.environ.get("TG_SESSION", "reader_session"))
+_session_str = os.environ.get("TG_SESSION_STRING") or os.environ.get("TG_SESSION_COLLECTOR")
+SESSION = StringSession(_session_str) if _session_str and len(_session_str) > 50 else (
+    _session_str or os.environ.get("TG_SESSION", "reader_session")
+)
 
 CHANNELS = [c.strip() for c in os.environ["TG_CHANNELS"].split(",") if c.strip()]
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")

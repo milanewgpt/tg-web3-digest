@@ -3,4 +3,8 @@ __pycache__/
 .env
 *.session
 *.session-journal
-tg_digest.sqlite3
+*.sqlite3
+.venv/
+venv/
+data/
+.login_state.json
