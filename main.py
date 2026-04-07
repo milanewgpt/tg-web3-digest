@@ -61,8 +61,8 @@ async def main():
 
     scheduler.start()
 
-    # Run collector immediately on startup, then APScheduler takes over
-    await collector_job()
+    # Run collector immediately on startup (as a task, non-blocking)
+    asyncio.create_task(collector_job())
 
     # Keep process alive
     while True:

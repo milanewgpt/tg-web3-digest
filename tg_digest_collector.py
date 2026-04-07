@@ -1,6 +1,6 @@
+import asyncio
 import os
 import sqlite3
-import time
 from datetime import timezone
 
 from telethon import TelegramClient
@@ -16,7 +16,6 @@ SESSION = StringSession(_session_str) if _session_str and len(_session_str) > 50
 
 CHANNELS = [c.strip() for c in os.environ["TG_CHANNELS"].split(",") if c.strip()]
 DB_PATH = os.environ.get("DB_PATH", "tg_digest.sqlite3")
-POLL_SECONDS = int(os.environ.get("POLL_SECONDS", "3600"))  # default 1h (quiet)
 ALL_CHANNELS_MODE = len(CHANNELS) == 1 and CHANNELS[0].lower() in {"all", "*"}
 
 
@@ -86,36 +85,34 @@ def utc_iso(dt):
 
 
 async def run():
+    """Run a single collection pass and return."""
     init_db()
     client = TelegramClient(SESSION, API_ID, API_HASH)
-    await client.start()  # first run will ask for code in console
+    await client.start()
 
-    while True:
-        try:
-            con = open_db()
-            sources = []
-            if ALL_CHANNELS_MODE:
-                # Read from all broadcast channels visible to Reader account.
-                async for dialog in client.iter_dialogs():
-                    if not dialog.is_channel:
-                        continue
-                    if not getattr(dialog.entity, "broadcast", False):
-                        continue
-                    label = dialog.entity.username or dialog.name or str(dialog.id)
-                    key = str(dialog.id)
-                    sources.append((key, label, dialog.entity))
-            else:
-                for ch in CHANNELS:
-                    entity = await client.get_entity(ch)
-                    label = getattr(entity, "username", None) or ch
-                    key = ch
-                    sources.append((key, label, entity))
+    try:
+        con = open_db()
+        sources = []
+        if ALL_CHANNELS_MODE:
+            async for dialog in client.iter_dialogs():
+                if not dialog.is_channel:
+                    continue
+                if not getattr(dialog.entity, "broadcast", False):
+                    continue
+                label = dialog.entity.username or dialog.name or str(dialog.id)
+                key = str(dialog.id)
+                sources.append((key, label, dialog.entity))
+        else:
+            for ch in CHANNELS:
+                entity = await client.get_entity(ch)
+                label = getattr(entity, "username", None) or ch
+                key = ch
+                sources.append((key, label, entity))
 
-            for channel_key, channel_label, entity in sources:
-                last_id = get_last_id(con, channel_key)
-
-                new_last = last_id
-                # reverse=True yields ascending order; min_id ensures only new messages
+        for channel_key, channel_label, entity in sources:
+            last_id = get_last_id(con, channel_key)
+            new_last = last_id
+            try:
                 async for msg in client.iter_messages(entity, min_id=last_id, reverse=True):
                     if not msg.message:
                         continue
@@ -125,23 +122,16 @@ async def run():
                     save_message(con, channel_label, msg.id, utc_iso(msg.date), text)
                     if msg.id > new_last:
                         new_last = msg.id
+            except FloodWaitError as e:
+                await asyncio.sleep(int(e.seconds) + 5)
+            if new_last != last_id:
+                set_last_id(con, channel_key, new_last)
 
-                if new_last != last_id:
-                    set_last_id(con, channel_key, new_last)
-
-            con.commit()
-            con.close()
-
-        except FloodWaitError as e:
-            time.sleep(int(e.seconds) + 5)
-        except Exception as e:
-            print("Collector error:", repr(e))
-            time.sleep(30)
-
-        time.sleep(POLL_SECONDS)
+        con.commit()
+        con.close()
+    finally:
+        await client.disconnect()
 
 
 if __name__ == "__main__":
-    import asyncio
-
     asyncio.run(run())
