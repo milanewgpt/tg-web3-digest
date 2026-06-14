@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 DB_PATH = os.environ.get("DB_PATH", "/data/tg_digest.sqlite3")
 SOURCES_DIR = os.environ.get("SOURCES_DIR", "/data/sources")
 MAX_PER_FILE = 500
-EXPORT_DAYS = 8
+EXPORT_DAYS = int(os.environ.get("EXPORT_DAYS", "8"))
 
 
 def export_day(con, date_str: str) -> int:
