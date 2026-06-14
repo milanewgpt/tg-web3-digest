@@ -2,6 +2,7 @@
 Minimal HTTP server serving /data/sources/ markdown files.
 Protected by API_SECRET env var.
 """
+import json
 import logging
 import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -35,7 +36,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "list":
             src = Path(SOURCES_DIR)
             files = sorted(f.name for f in src.glob("*.md")) if src.exists() else []
-            body = str(files).encode()
+            body = json.dumps(files).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", len(body))
