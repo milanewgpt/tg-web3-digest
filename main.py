@@ -60,7 +60,8 @@ async def exporter_job():
 
 async def main():
     # HTTP API server in background thread (serves /data/sources/ for tg-notebooklm)
-    from tg_digest_api import start_server
+    from tg_digest_api import start_server, register_send_callback
+    register_send_callback(asyncio.get_event_loop(), sender_job)
     threading.Thread(target=start_server, daemon=True).start()
 
     scheduler = AsyncIOScheduler(timezone=TZ)

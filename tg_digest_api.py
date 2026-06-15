@@ -2,6 +2,7 @@
 Minimal HTTP server serving /data/sources/ markdown files.
 Protected by API_SECRET env var.
 """
+import asyncio
 import json
 import logging
 import os
@@ -13,6 +14,15 @@ log = logging.getLogger(__name__)
 SOURCES_DIR = os.environ.get("SOURCES_DIR", "/data/sources")
 API_SECRET = os.environ.get("API_SECRET", "")
 PORT = int(os.environ.get("PORT", "8080"))
+
+_main_loop = None
+_send_callback = None
+
+
+def register_send_callback(loop, callback):
+    global _main_loop, _send_callback
+    _main_loop = loop
+    _send_callback = callback
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -57,6 +67,28 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(body)
                 return
+
+        self.send_response(404)
+        self.end_headers()
+
+    def do_POST(self):
+        if not self._check_auth():
+            self.send_response(401)
+            self.end_headers()
+            return
+
+        path = self.path.lstrip("/")
+
+        # POST /send → trigger digest sender immediately
+        if path == "send" and _main_loop and _send_callback:
+            asyncio.run_coroutine_threadsafe(_send_callback(), _main_loop)
+            body = b'{"ok": true}'
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", len(body))
+            self.end_headers()
+            self.wfile.write(body)
+            return
 
         self.send_response(404)
         self.end_headers()
